@@ -1,13 +1,29 @@
 const path = require("path");
 const openBrowser = require("react-dev-utils/openBrowser");
+const HtmlWebbpackplugin = require("html-webpack-plugin")
 module.exports = {
   mode: "development",
-  entry: "./src/index.tsx",
+  entry: "./src/Client/index.tsx",
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
+
+  plugins: [
+    new HtmlWebbpackplugin({
+      inject: true,
+      template: "public/index.html"
+    })
+  ],
+
   output: {
     path: path.resolve(__dirname, "public"),
     filename: "main.js",
+    publicPath: '/'
   },
-  target: "web",
+
+  stats: {
+    children: true,
+  },
   devServer: {
     port: "3000",
     static: ["./public"],
@@ -17,12 +33,8 @@ module.exports = {
         throw new Error("webpack-dev-server is not defined");
       }
       const addr = devServer.server.address();
-      console.log(addr);
       openBrowser(`http://localhost:${addr.port}`);
     },
-  },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js"],
   },
   module: {
     rules: [
@@ -42,8 +54,18 @@ module.exports = {
       },
       {
         test: /\.(jpg|jpeg|png|gif|mp3|svg)$/,
-        use: ["file-loader"],
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'images/[name].[hash].[ext]',
+            },
+          },
+        ],
       },
     ],
   },
 };
+
+
+
